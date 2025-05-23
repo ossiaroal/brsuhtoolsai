@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartBrush Mobile</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fef6f1;
+      color: #2c2c2c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2vh 5vw;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border-radius: 24px;
+      padding: 5vw;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 6vw;
+      margin: 0;
+      color: #1b1b1b;
+      text-align: center;
+    }
+
+    p.subtitle {
+      font-size: 4vw;
+      color: #666;
+      text-align: center;
+      margin-top: 2vw;
+      margin-bottom: 6vw;
+    }
+
+    .card {
+      background: #fdfdfd;
+      border-radius: 16px;
+      padding: 4vw;
+      margin-bottom: 4vw;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      margin: 0 0 1vw;
+      font-size: 4.5vw;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 4vw;
+      color: #444;
+    }
+
+    .start-button {
+      width: 100%;
+      padding: 4vw;
+      background-color: #f86f51;
+      color: white;
+      font-size: 5vw;
+      font-weight: bold;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+
+    .start-button:hover {
+      background-color: #e25a3f;
+    }
+
+    .section-label {
+      font-size: 4vw;
+      color: #f86f51;
+      text-align: center;
+      margin-top: 4vw;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <h1>SmartBrush</h1>
+    <p class="subtitle">Train your brushing the smart way</p>
+
+    <div class="card">
+      <h2>Brushing Time</h2>
+      <p id="brushingTime">2 minutes 0 seconds</p>
+    </div>
+
+    <div class="card">
+      <h2>Current Zone</h2>
+      <p id="brushingZone">Ready to start</p>
+    </div>
+
+    <div class="card">
+      <h2>Last Brushed</h2>
+      <p id="lastBrushed">--</p>
+    </div>
+
+    <button class="start-button" onclick="startBrushing()">Start Brushing</button>
+
+    <div class="section-label" id="zoneLabel">Press start to begin</div>
+  </div>
+
+  <script>
+    const zoneMap = [
+      "Upper Left",
+      "Upper Front",
+      "Upper Right",
+      "Lower Left",
+      "Lower Front",
+      "Lower Right"
+    ];
+
+    function startBrushing() {
+      const totalSeconds = 120;
+      let remaining = totalSeconds;
+      const brushingTimeEl = document.getElementById('brushingTime');
+      const brushingZoneEl = document.getElementById('brushingZone');
+      const lastBrushedEl = document.getElementById('lastBrushed');
+      const zoneLabel = document.getElementById('zoneLabel');
+
+      let zoneIndex = 0;
+      brushingZoneEl.textContent = "Brushing in progress...";
+      zoneLabel.textContent = `Current: ${zoneMap[zoneIndex]}`;
+
+      const interval = setInterval(() => {
+        let mins = Math.floor(remaining / 60);
+        let secs = remaining % 60;
+        brushingTimeEl.textContent = mins + "m " + secs + "s";
+
+        // 刷牙区块每20秒切换一次
+        if (remaining % 20 === 0 && remaining !== 120) {
+          zoneIndex = Math.min(zoneMap.length - 1, zoneIndex + 1);
+          zoneLabel.textContent = `Current: ${zoneMap[zoneIndex]}`;
+        }
+
+        remaining--;
+
+        if (remaining < 0) {
+          clearInterval(interval);
+          brushingZoneEl.textContent = "Great job!";
+          zoneLabel.textContent = "All zones completed!";
+          const now = new Date();
+          lastBrushedEl.textContent = `Today at ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
